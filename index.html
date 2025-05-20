@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味课堂点名系统</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- 设置面板 -->
+        <div id="settings-panel" class="panel">
+            <h2>课堂点名设置</h2>
+            <div class="student-list">
+                <h3>学生名单</h3>
+                <div id="student-inputs">
+                    <div class="student-input">
+                        <input type="text" placeholder="输入学生姓名">
+                        <button class="remove-student">×</button>
+                    </div>
+                </div>
+                <button id="add-student" class="btn">添加学生</button>
+            </div>
+            <div class="settings">
+                <div class="setting-item">
+                    <label>选择人数：</label>
+                    <input type="number" id="select-count" min="1" value="3">
+                </div>
+                <div class="setting-item">
+                    <label>选择主题：</label>
+                    <select id="theme-select">
+                        <option value="running">跑步比赛</option>
+                        <option value="swimming">游泳比赛</option>
+                        <option value="cycling">自行车比赛</option>
+                    </select>
+                </div>
+            </div>
+            <button id="start-btn" class="btn primary">开始点名</button>
+        </div>
+
+        <!-- 比赛场景 -->
+        <div id="game-scene" class="panel hidden">
+            <canvas id="game-canvas"></canvas>
+        </div>
+
+        <!-- 颁奖台 -->
+        <div id="award-ceremony" class="panel hidden">
+            <div class="podium">
+                <div class="podium-step second">
+                    <div class="character"></div>
+                    <div class="rank">亚军</div>
+                </div>
+                <div class="podium-step first">
+                    <div class="character"></div>
+                    <div class="rank">冠军</div>
+                </div>
+                <div class="podium-step third">
+                    <div class="character"></div>
+                    <div class="rank">季军</div>
+                </div>
+            </div>
+            <button id="restart-btn" class="btn">重新开始</button>
+        </div>
+    </div>
+
+    <script src="js/characters.js"></script>
+    <script src="js/animations.js"></script>
+    <script src="js/themes.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html> 

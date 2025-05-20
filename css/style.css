@@ -1,0 +1,202 @@
+/* 全局样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    background: linear-gradient(135deg, #f6d365 0%, #fda085 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+}
+
+/* 面板样式 */
+.panel {
+    transition: all 0.3s ease;
+}
+
+.panel.hidden {
+    display: none;
+}
+
+/* 设置面板样式 */
+#settings-panel {
+    text-align: center;
+}
+
+h2 {
+    color: #333;
+    margin-bottom: 30px;
+    font-size: 2em;
+}
+
+.student-list {
+    margin-bottom: 30px;
+}
+
+.student-input {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.student-input input {
+    flex: 1;
+    padding: 10px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+.remove-student {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    width: 30px;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: #4CAF50;
+    color: white;
+    margin: 10px;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.btn.primary {
+    background: #2196F3;
+    font-size: 18px;
+    padding: 15px 30px;
+}
+
+/* 设置项样式 */
+.settings {
+    margin: 20px 0;
+}
+
+.setting-item {
+    margin: 15px 0;
+}
+
+.setting-item label {
+    margin-right: 10px;
+    font-size: 16px;
+}
+
+.setting-item input,
+.setting-item select {
+    padding: 8px;
+    border: 2px solid #ddd;
+    border-radius: 6px;
+    font-size: 16px;
+}
+
+/* 游戏场景样式 */
+#game-scene {
+    width: 100%;
+    height: 600px;
+    position: relative;
+}
+
+#game-canvas {
+    width: 100%;
+    height: 100%;
+    background: #f0f0f0;
+    border-radius: 10px;
+}
+
+/* 颁奖台样式 */
+.podium {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 20px;
+    margin: 50px 0;
+    height: 300px;
+}
+
+.podium-step {
+    width: 150px;
+    background: #e0e0e0;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.podium-step.first {
+    height: 200px;
+    background: #FFD700;
+}
+
+.podium-step.second {
+    height: 150px;
+    background: #C0C0C0;
+}
+
+.podium-step.third {
+    height: 100px;
+    background: #CD7F32;
+}
+
+.character {
+    width: 80px;
+    height: 80px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.rank {
+    position: absolute;
+    bottom: 20px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    width: 100%;
+    padding: 0 10px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* 动画效果 */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+.character {
+    animation: bounce 1s infinite;
+} 
