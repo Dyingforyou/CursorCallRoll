@@ -1,8 +1,7 @@
 class Character {
     constructor(name) {
         this.name = name;
-        this.hairColor = this.generateRandomColor();
-        this.clothesColor = this.generateRandomColor();
+        this.duckIndex = Math.floor(Math.random() * 8); // 随机选择一个鸭子图片
         this.position = { x: 0, y: 0 };
         this.speed = 0;
         this.isWinner = false;
@@ -22,63 +21,6 @@ class Character {
             '#2ECC71'  // 浅绿色
         ];
         return colors[Math.floor(Math.random() * colors.length)];
-    }
-
-    draw(ctx, theme) {
-        // 绘制角色身体
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y, 20, 0, Math.PI * 2);
-        ctx.fillStyle = this.clothesColor;
-        ctx.fill();
-
-        // 绘制头发
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y - 10, 15, 0, Math.PI * 2);
-        ctx.fillStyle = this.hairColor;
-        ctx.fill();
-
-        // 绘制眼睛
-        ctx.beginPath();
-        ctx.arc(this.position.x - 5, this.position.y - 5, 3, 0, Math.PI * 2);
-        ctx.arc(this.position.x + 5, this.position.y - 5, 3, 0, Math.PI * 2);
-        ctx.fillStyle = '#000';
-        ctx.fill();
-
-        // 绘制嘴巴
-        ctx.beginPath();
-        ctx.arc(this.position.x, this.position.y + 5, 5, 0, Math.PI);
-        ctx.strokeStyle = '#000';
-        ctx.stroke();
-
-        // 根据主题绘制不同的运动装备
-        this.drawThemeEquipment(ctx, theme);
-    }
-
-    drawThemeEquipment(ctx, theme) {
-        switch(theme) {
-            case 'running':
-                // 绘制跑步鞋
-                ctx.beginPath();
-                ctx.rect(this.position.x - 15, this.position.y + 15, 10, 5);
-                ctx.rect(this.position.x + 5, this.position.y + 15, 10, 5);
-                ctx.fillStyle = '#333';
-                ctx.fill();
-                break;
-            case 'swimming':
-                // 绘制泳镜
-                ctx.beginPath();
-                ctx.rect(this.position.x - 10, this.position.y - 8, 20, 5);
-                ctx.fillStyle = '#4ECDC4';
-                ctx.fill();
-                break;
-            case 'cycling':
-                // 绘制自行车头盔
-                ctx.beginPath();
-                ctx.arc(this.position.x, this.position.y - 15, 12, 0, Math.PI);
-                ctx.fillStyle = '#FFD700';
-                ctx.fill();
-                break;
-        }
     }
 }
 

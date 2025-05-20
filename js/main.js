@@ -1,7 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
     // 初始化各个管理器
     const characterManager = new CharacterManager();
-    const themeManager = new ThemeManager();
     const canvas = document.getElementById('game-canvas');
     const animationManager = new AnimationManager(canvas);
 
@@ -10,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const container = canvas.parentElement;
         canvas.width = container.clientWidth;
         canvas.height = container.clientHeight;
-        console.log('Canvas size:', canvas.width, canvas.height); // 调试信息
     }
 
     // 初始调整大小
@@ -23,37 +21,104 @@ document.addEventListener('DOMContentLoaded', () => {
     const settingsPanel = document.getElementById('settings-panel');
     const gameScene = document.getElementById('game-scene');
     const awardCeremony = document.getElementById('award-ceremony');
-    const addStudentBtn = document.getElementById('add-student');
     const startBtn = document.getElementById('start-btn');
     const restartBtn = document.getElementById('restart-btn');
-    const studentInputs = document.getElementById('student-inputs');
     const selectCount = document.getElementById('select-count');
-    const themeSelect = document.getElementById('theme-select');
+    const addClassBtn = document.getElementById('add-class');
+    const classNameInput = document.getElementById('class-name');
+    const classSelect = document.getElementById('class-select');
+    const studentNames = document.getElementById('student-names');
 
-    // 添加学生输入框
-    function addStudentInput() {
-        const div = document.createElement('div');
-        div.className = 'student-input';
-        div.innerHTML = `
-            <input type="text" placeholder="输入学生姓名">
-            <button class="remove-student">×</button>
-        `;
-        studentInputs.appendChild(div);
+    // 班级数据存储
+    const classes = new Map();
 
-        // 添加删除按钮事件
-        div.querySelector('.remove-student').addEventListener('click', () => {
-            div.remove();
+    // 从localStorage加载数据
+    function loadFromLocalStorage() {
+        const savedClasses = localStorage.getItem('classes');
+        if (savedClasses) {
+            const parsedClasses = JSON.parse(savedClasses);
+            parsedClasses.forEach(([className, students]) => {
+                classes.set(className, students);
+            });
+            updateClassSelect();
+        }
+    }
+
+    // 保存数据到localStorage
+    function saveToLocalStorage() {
+        const classArray = Array.from(classes.entries());
+        localStorage.setItem('classes', JSON.stringify(classArray));
+    }
+
+    // 添加班级
+    addClassBtn.addEventListener('click', () => {
+        const className = classNameInput.value.trim();
+        if (!className) {
+            alert('请输入班级名称！');
+            return;
+        }
+        if (classes.has(className)) {
+            alert('该班级已存在！');
+            return;
+        }
+        classes.set(className, []);
+        updateClassSelect();
+        classNameInput.value = '';
+        saveToLocalStorage();
+    });
+
+    // 更新班级选择下拉框
+    function updateClassSelect() {
+        classSelect.innerHTML = '<option value="">请选择班级</option>';
+        classes.forEach((students, className) => {
+            const option = document.createElement('option');
+            option.value = className;
+            option.textContent = className;
+            classSelect.appendChild(option);
         });
     }
 
-    // 初始化添加学生按钮
-    addStudentBtn.addEventListener('click', addStudentInput);
+    // 班级选择变化时更新学生列表
+    classSelect.addEventListener('change', () => {
+        const selectedClass = classSelect.value;
+        if (selectedClass) {
+            const students = classes.get(selectedClass);
+            studentNames.value = students.join('\n');
+            // 更新选择人数的最大值
+            selectCount.max = students.length;
+            selectCount.value = Math.min(parseInt(selectCount.value), students.length);
+        } else {
+            studentNames.value = '';
+            selectCount.max = 1;
+            selectCount.value = 1;
+        }
+    });
+
+    // 保存当前班级的学生
+    function saveCurrentClassStudents() {
+        const selectedClass = classSelect.value;
+        if (selectedClass) {
+            const students = studentNames.value
+                .split('\n')
+                .map(name => name.trim())
+                .filter(name => name !== '');
+            classes.set(selectedClass, students);
+            // 更新选择人数的最大值
+            selectCount.max = students.length;
+            selectCount.value = Math.min(parseInt(selectCount.value), students.length);
+            saveToLocalStorage();
+        }
+    }
+
+    // 监听学生名单变化
+    studentNames.addEventListener('change', saveCurrentClassStudents);
+    studentNames.addEventListener('blur', saveCurrentClassStudents);
 
     // 获取所有学生姓名
     function getStudentNames() {
-        const inputs = studentInputs.querySelectorAll('input');
-        return Array.from(inputs)
-            .map(input => input.value.trim())
+        return studentNames.value
+            .split('\n')
+            .map(name => name.trim())
             .filter(name => name !== '');
     }
 
@@ -76,11 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // 获取获胜者
         const winners = characterManager.getRandomWinners(count);
-        
-        // 设置主题
-        const theme = themeSelect.value;
-        themeManager.setTheme(theme);
-        animationManager.setTheme(theme);
 
         // 显示游戏场景
         settingsPanel.classList.add('hidden');
@@ -109,8 +169,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const rank = podiumSteps[index].querySelector('.rank');
             
             // 设置角色样式
-            character.style.backgroundColor = winner.clothesColor;
-            character.style.border = `4px solid ${winner.hairColor}`;
+            character.style.backgroundImage = `url('images/Rubber-Duck (${winner.duckIndex + 1}).png')`;
+            character.style.backgroundSize = 'contain';
+            character.style.backgroundRepeat = 'no-repeat';
+            character.style.backgroundPosition = 'center';
             
             // 更新排名显示，包含学生名字
             rank.textContent = `${rank.textContent}：${winner.name}`;
@@ -129,6 +191,6 @@ document.addEventListener('DOMContentLoaded', () => {
         awardCeremony.classList.add('hidden');
     });
 
-    // 初始化添加一个学生输入框
-    addStudentInput();
+    // 加载保存的数据
+    loadFromLocalStorage();
 }); 
