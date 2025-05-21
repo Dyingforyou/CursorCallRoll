@@ -64,6 +64,7 @@ textarea.form-input {
 
 /* 按钮样式 */
 .btn {
+    width: 105px;
     padding: 8px 16px;
     border: none;
     border-radius: 4px;
