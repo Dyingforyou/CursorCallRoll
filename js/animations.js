@@ -13,6 +13,15 @@ class AnimationManager {
         this.characters = [];
         this.winners = [];
         this.finishedCount = 0;
+
+        // 设置画布为全屏
+        this.resizeCanvas();
+        window.addEventListener('resize', () => this.resizeCanvas());
+    }
+
+    resizeCanvas() {
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
     }
 
     loadDuckImages() {
@@ -25,20 +34,36 @@ class AnimationManager {
     }
 
     start(characters, winners) {
-        // 确保在开始新动画前清理旧动画
         this.stop();
         
-        // 重置所有状态
-        this.characters = characters.map(char => ({
-            ...char,
-            speed: 0.3 + Math.random() * 0.4, // 增加初始速度差异
-            position: { x: 50, y: char.position.y }, // 重置到起点
-            finished: false, // 添加完成状态标记
-            swimOffset: 0, // 添加游泳动画偏移量
-            swimDirection: 1, // 添加游泳方向
-            speedChangeTimer: 0, // 添加速度变化计时器
-            speedChangeInterval: 500 + Math.random() * 1000 // 随机速度变化间隔
-        }));
+        // 计算合适的行数和列数
+        const totalDucks = characters.length;
+        const aspectRatio = this.canvas.width / this.canvas.height;
+        const cols = Math.ceil(Math.sqrt(totalDucks * aspectRatio));
+        const rows = Math.ceil(totalDucks / cols);
+        
+        // 计算每个鸭子的位置
+        const cellWidth = this.canvas.width / cols;
+        const cellHeight = this.canvas.height / rows;
+        
+        this.characters = characters.map((char, index) => {
+            const col = index % cols;
+            const row = Math.floor(index / cols);
+            return {
+                ...char,
+                speed: 0.15 + Math.random() * 0.3,
+                position: { 
+                    x: 50, 
+                    y: (row * cellHeight) + (cellHeight / 2)
+                },
+                finished: false,
+                swimOffset: 0,
+                swimDirection: 1,
+                speedChangeTimer: 0,
+                speedChangeInterval: 500 + Math.random() * 1000
+            };
+        });
+        
         this.winners = winners;
         this.isAnimating = true;
         this.finishedCount = 0;
@@ -124,7 +149,6 @@ class AnimationManager {
         const isWinner = this.winners.includes(char);
         const endX = this.canvas.width - 100;
         
-        // 如果已经到达终点，标记为完成
         if (char.position.x >= endX) {
             if (!char.finished) {
                 char.finished = true;
@@ -140,32 +164,29 @@ class AnimationManager {
         }
 
         // 更新速度变化计时器
-        char.speedChangeTimer += 16; // 假设每帧16ms
+        char.speedChangeTimer += 16;
         if (char.speedChangeTimer >= char.speedChangeInterval) {
             char.speedChangeTimer = 0;
-            // 随机生成新的速度变化间隔
             char.speedChangeInterval = 500 + Math.random() * 1000;
             
-            // 生成新的速度变化
-            const speedChange = (Math.random() - 0.5) * 0.3; // 减小速度变化范围
+            const speedChange = (Math.random() - 0.5) * 0.3;
             char.speed = Math.max(0.15, Math.min(0.8, char.speed + speedChange));
         }
 
-        // 获胜者额外速度加成
         if (isWinner) {
-            const boost = 0.15 + Math.random() * 0.15; // 减小速度加成
+            const boost = 0.15 + Math.random() * 0.15;
             char.speed = Math.min(0.9, char.speed + boost);
         }
 
         const startX = 50;
         const distance = endX - startX;
         
-        const rowHeight = 60;
-        const maxRows = Math.ceil((this.canvas.height - 100) / rowHeight);
-        const row = index % maxRows;
+        // 使用原始行高计算，保持垂直位置不变
+        const rowHeight = this.canvas.height / Math.ceil(this.characters.length / Math.ceil(Math.sqrt(this.characters.length * (this.canvas.width / this.canvas.height))));
+        const row = Math.floor(index / Math.ceil(Math.sqrt(this.characters.length * (this.canvas.width / this.canvas.height))));
         
         char.position.x = Math.min(endX, char.position.x + char.speed);
-        char.position.y = 100 + (row * rowHeight) + char.swimOffset;
+        char.position.y = (row * rowHeight) + (rowHeight / 2) + char.swimOffset;
     }
 
     drawDuck(char) {
@@ -191,7 +212,7 @@ class AnimationManager {
         // 绘制起点和终点线（白色虚线）
         this.ctx.strokeStyle = '#FFFFFF';
         this.ctx.lineWidth = 2;
-        this.ctx.setLineDash([10, 10]); // 设置虚线样式
+        this.ctx.setLineDash([10, 10]);
 
         // 起点线
         this.ctx.beginPath();
