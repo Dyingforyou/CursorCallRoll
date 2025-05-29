@@ -13,6 +13,7 @@ class AnimationManager {
         this.characters = [];
         this.winners = [];
         this.finishedCount = 0;
+        this.count = 0;
 
         // 设置画布为全屏
         this.resizeCanvas();
@@ -33,29 +34,54 @@ class AnimationManager {
         }
     }
 
-    start(characters, winners) {
+    start(characters,count) {
         this.stop();
         
         // 计算合适的行数和列数
         const totalDucks = characters.length;
-        const aspectRatio = this.canvas.width / this.canvas.height;
-        const cols = Math.ceil(Math.sqrt(totalDucks * aspectRatio));
-        const rows = Math.ceil(totalDucks / cols);
+
+        // const aspectRatio = this.canvas.width / this.canvas.height;
+        // const cols = Math.ceil(Math.sqrt(totalDucks * aspectRatio));
+        // const rows = Math.ceil(totalDucks / cols);
+        const canvasHeight = this.canvas.height;
+    
+        // 计算合适的垂直间距
+        const minSpacing = 10; // 鸭子间最小间距
+        const topBottomMargin = 50; // 顶部和底部边距
+        
+        // 可用的垂直空间
+        const availableHeight = canvasHeight - 2 * topBottomMargin;
+        
+        // 计算每个鸭子的垂直位置
+        const positions = [];
+        if (totalDucks > 1) {
+            // 多个鸭子：均匀分布
+            const spacing = Math.max(minSpacing, availableHeight / (totalDucks - 1));
+            for (let i = 0; i < totalDucks; i++) {
+                positions.push(topBottomMargin + i * spacing);
+            }
+        } else if (totalDucks === 1) {
+            // 只有一个鸭子：居中显示
+            positions.push(canvasHeight / 2);
+        }
         
         // 计算每个鸭子的位置
-        const cellWidth = this.canvas.width / cols;
-        const cellHeight = this.canvas.height / rows;
+        // const cellWidth = this.canvas.width / cols;
+        // const cellHeight = this.canvas.height / rows;
         
         this.characters = characters.map((char, index) => {
-            const col = index % cols;
-            const row = Math.floor(index / cols);
+            // const col = index % cols;
+            // const row = Math.floor(index / cols);
+
+        console.log('positions'+positions[index])
             return {
                 ...char,
                 speed: 0.15 + Math.random() * 0.3,
                 position: { 
                     x: 50, 
-                    y: (row * cellHeight) + (cellHeight / 2)
+                    y: positions[index]
                 },
+                initialY: positions[index],
                 finished: false,
                 swimOffset: 0,
                 swimDirection: 1,
@@ -63,8 +89,7 @@ class AnimationManager {
                 speedChangeInterval: 500 + Math.random() * 1000
             };
         });
-        
-        this.winners = winners;
+        this.count = count;
         this.isAnimating = true;
         this.finishedCount = 0;
         this.startTime = Date.now();
@@ -130,7 +155,7 @@ class AnimationManager {
         });
 
         // 检查是否所有获胜者都到达终点
-        if (this.finishedCount >= this.winners.length) {
+        if (this.finishedCount >= this.count) {
             this.isAnimating = false;
             this.onAnimationComplete(this.winners);
             return;
@@ -146,13 +171,14 @@ class AnimationManager {
     }
 
     updateCharacterPosition(char, index, progress) {
-        const isWinner = this.winners.includes(char);
+        //const isWinner = this.winners.includes(char);
         const endX = this.canvas.width - 100;
         
         if (char.position.x >= endX) {
             if (!char.finished) {
                 char.finished = true;
                 this.finishedCount++;
+                this.winners.push(char)
             }
             return;
         }
@@ -173,10 +199,10 @@ class AnimationManager {
             char.speed = Math.max(0.15, Math.min(0.8, char.speed + speedChange));
         }
 
-        if (isWinner) {
-            const boost = 0.15 + Math.random() * 0.15;
-            char.speed = Math.min(0.9, char.speed + boost);
-        }
+        // if (isWinner) {
+        //     const boost = 0.15 + Math.random() * 0.15;
+        //     char.speed = Math.min(0.9, char.speed + boost);
+        // }
 
         const startX = 50;
         const distance = endX - startX;
@@ -186,7 +212,8 @@ class AnimationManager {
         const row = Math.floor(index / Math.ceil(Math.sqrt(this.characters.length * (this.canvas.width / this.canvas.height))));
         
         char.position.x = Math.min(endX, char.position.x + char.speed);
-        char.position.y = (row * rowHeight) + (rowHeight / 2) + char.swimOffset;
+        // char.position.y = (row * rowHeight) + (rowHeight / 2) + char.swimOffset;
+        char.position.y = char.initialY + char.swimOffset;
     }
 
     drawDuck(char) {

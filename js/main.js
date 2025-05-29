@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', () => {
         characterManager.createCharacters(names);
         
         // 获取获胜者
-        const winners = characterManager.getRandomWinners(count);
+        //const winners = characterManager.getRandomWinners(count);
 
         // 显示游戏场景
         settingsPanel.classList.add('hidden');
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         resizeCanvas();
 
         // 开始动画
-        animationManager.start(characterManager.characters, winners);
+        animationManager.start(characterManager.characters, count);
     });
 
     // 动画完成事件
